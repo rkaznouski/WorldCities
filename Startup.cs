@@ -30,7 +30,7 @@ namespace WorldCities
             });
 
             // Add EntityFramework support for SqlServer.
-            //services.AddEntityFrameworkSqlServer();
+            services.AddEntityFrameworkSqlServer();
 
             // Add ApplicationDbContext.
             services.AddDbContext<ApplicationDbContext>(options =>
