@@ -5,7 +5,7 @@ import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 
 import { City } from './city';
-import { error } from 'protractor';
+//import { error } from 'protractor';
 
 @Component({
   selector: 'app-cities',
@@ -21,6 +21,9 @@ export class CitiesComponent {
   public defaultSortColumn: string = "name";
   public defaultSortOrder: string = "asc";
 
+  defaultFilterColumn: string = "name";
+  filterQuery: string = null;
+
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
 
@@ -30,28 +33,37 @@ export class CitiesComponent {
   }
 
   ngOnInit() {
-    this.loadData();
+    this.loadData(null);
   }
 
-  loadData() {
+  loadData(query: string = null) {
     var pageEvent = new PageEvent();
     pageEvent.pageIndex = this.defaultPageIndex;
     pageEvent.pageSize = this.defaultPageSize;
+    if (query) {
+      this.filterQuery = query;
+    }
     this.getData(pageEvent);
   }
 
   getData(event: PageEvent) {
     var url = this.baseUrl + 'api/Cities';
-    var url = this.baseUrl + 'api/Cities';
     var params = new HttpParams()
       .set("pageIndex", event.pageIndex.toString())
-      .set("pageIndex", event.pageIndex.toString())
+      .set("pageSize", event.pageSize.toString())
       .set("sortColumn", (this.sort)
         ? this.sort.active
         : this.defaultSortColumn)
       .set("sortOrder", (this.sort)
         ? this.sort.direction
         : this.defaultSortOrder);
+
+    if (this.filterQuery) {
+      params = params
+        .set("filterColumn", this.defaultFilterColumn)
+        .set("filterQuery", this.filterQuery)
+    }
+
     this.http.get<any>(url, { params })
       .subscribe(result => {
         this.paginator.length = result.totalCount;
